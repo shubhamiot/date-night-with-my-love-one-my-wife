@@ -300,6 +300,9 @@
     <div class="mt-2 small text-muted text-center">Finalizing will add the event to calendar and send invite</div>
   </div>
 
+  <!-- Background music (place song.mp3 next to index.html) -->
+  <audio id="bgAudio" src="song.mp3" preload="auto"></audio>
+
   <!-- footer / message -->
   <div class="card-footer-note mt-3 pt-2 text-center">
     <i class="bi bi-suit-heart-fill text-danger"></i> for you <i class="bi bi-suit-heart-fill text-danger"></i>
@@ -392,6 +395,29 @@
     const finalizeBtn = document.getElementById('finalizeBtn');
 
     const globalFeedback = document.getElementById('globalFeedback');
+
+    // Background audio: attempts to play from the start. If autoplay is blocked the play will be tried again on first user interaction.
+    const bgAudio = document.getElementById('bgAudio');
+    function tryPlayAudio() {
+      if (!bgAudio) return;
+      try {
+        bgAudio.currentTime = 0;
+        const p = bgAudio.play();
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => {
+            // autoplay blocked; will start on user interaction
+            console.log('bgAudio autoplay blocked — will retry on interaction');
+          });
+        }
+      } catch (err) {
+        console.warn('bgAudio play failed', err);
+      }
+    }
+
+    // Try to play on load (may be blocked), also ensure play after first user gesture
+    tryPlayAudio();
+    if (yesBtn) yesBtn.addEventListener('click', tryPlayAudio, { once: true });
+    if (finalizeBtn) finalizeBtn.addEventListener('click', tryPlayAudio);
 
     // helper: show page
     function showPage(pageId) {
