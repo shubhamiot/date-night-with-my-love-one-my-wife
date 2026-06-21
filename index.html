@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📅 Date proposal · Let’s go!</title>
+  <!-- Bootstrap 5 + icons & custom style -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    body {
+      background: linear-gradient(145deg, #fce4ec 0%, #f8e8ff 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+    }
+    .card {
+      border: none;
+      border-radius: 2.5rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 2rem 1.5rem;
+      max-width: 720px;
+      width: 100%;
+      transition: all 0.2s;
+    }
+    .step-indicator {
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      color: #a05b7a;
+    }
+    .btn-soft {
+      border-radius: 50px;
+      padding: 0.6rem 2rem;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .btn-soft-primary {
+      background: #d7b0d4;
+      border: 1px solid #c28fc0;
+      color: #3d2a3b;
+    }
+    .btn-soft-primary:hover {
+      background: #c9a0c6;
+      transform: scale(1.02);
+    }
+    .btn-soft-success {
+      background: #b4d9b0;
+      border: 1px solid #8fbf8a;
+      color: #1d3a1b;
+    }
+    .btn-soft-success:hover {
+      background: #a0cd9b;
+      transform: scale(1.02);
+    }
+    .btn-outline-romance {
+      border: 2px solid #cb8bb0;
+      color: #7a4a67;
+      border-radius: 40px;
+      padding: 0.5rem 1.8rem;
+      font-weight: 500;
+    }
+    .btn-outline-romance:hover {
+      background: #cb8bb0;
+      color: white;
+    }
+    .food-grid .btn {
+      border-radius: 40px;
+      background: #f3e3f0;
+      border: 1px solid #dbb8d4;
+      color: #3f2a3a;
+      font-weight: 500;
+      margin: 0.2rem;
+      transition: all 0.1s;
+    }
+    .food-grid .btn:hover,
+    .food-grid .btn.active {
+      background: #cb8bb0;
+      color: white;
+      border-color: #b06d96;
+      transform: scale(1.02);
+    }
+    .time-btn-group .btn {
+      border-radius: 30px;
+      padding: 0.4rem 1.6rem;
+      margin: 0.25rem;
+      background: #f0e0ed;
+      border: 1px solid #d1b1cb;
+    }
+    .time-btn-group .btn.active {
+      background: #a77b9e;
+      color: white;
+      border-color: #8b6482;
+    }
+    .calendar-input {
+      background: #faf3f8;
+      border-radius: 50px;
+      padding: 0.6rem 1.2rem;
+      border: 1px solid #dcc2d6;
+    }
+    .card-footer-note {
+      background: transparent;
+      border-top: 1px dashed #d4b8ce;
+      color: #4e3b48;
+    }
+    #page2, #page3, #page4, #page5, #page6, #page7, #page8, #page9, #page10 {
+      display: none;
+    }
+    .page-transition {
+      animation: fadeGlow 0.3s ease;
+    }
+    @keyframes fadeGlow {
+      0% { opacity: 0.6; transform: translateY(6px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .selected-feedback {
+      font-size: 0.9rem;
+      background: #f0e4ed;
+      border-radius: 40px;
+      padding: 0.3rem 1.2rem;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <!-- header / step -->
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <span class="step-indicator" id="stepLabel">💌 step 1/10</span>
+    <span><i class="bi bi-calendar-heart-fill text-danger" style="font-size: 1.6rem;"></i></span>
+  </div>
+
+  <!-- ========== PAGE 1 ========== -->
+  <div id="page1" class="page-transition">
+    <div class="text-center my-3">
+      <h2 class="display-6 fw-bold" style="color: #4a2c41;">Will you go on a date with me? <i class="bi bi-arrow-through-heart-fill text-danger"></i></h2>
+      <p class="lead text-secondary" style="font-weight: 400;">✨ Just you, a little adventure, and maybe dessert.</p>
+      <div class="mt-4 d-flex flex-wrap justify-content-center gap-3">
+        <button class="btn btn-soft-success btn-soft px-5" id="yesBtn"><i class="bi bi-emoji-heart-eyes"></i> Yes!</button>
+        <button class="btn btn-outline-romance px-5" id="noBtn">No 😢</button>
+      </div>
+      <div id="noMessage" class="mt-4 fst-italic text-secondary" style="display: none;">aww, maybe next time 🌸</div>
+    </div>
+  </div>
+
+  <!-- ========== PAGE 2 ========== -->
+  <div id="page2" class="page-transition">
+    <h4 class="fw-semibold" style="color: #3f2a3a;"><i class="bi bi-calendar-week"></i> When are you free?</h4>
+    <p class="text-secondary">Pick a date that makes your heart skip 💓</p>
+    <div class="mb-3">
+      <input type="date" id="datePicker" class="form-control calendar-input" value="2026-06-20" min="2026-06-18" max="2026-07-20">
+    </div>
+    <div class="d-flex justify-content-between mt-3">
+      <button class="btn btn-soft-primary btn-soft" id="backFromDate"><i class="bi bi-arrow-left"></i> back</button>
+      <button class="btn btn-soft-success btn-soft" id="nextToTime">next <i class="bi bi-arrow-right"></i></button>
+    </div>
+    <div class="text-center mt-2 small text-muted">(date will be saved for calendar)</div>
+  </div>
+
+  <!-- ========== PAGE 3 ========== -->
+  <div id="page3" class="page-transition">
+    <h4 class="fw-semibold" style="color: #3f2a3a;"><i class="bi bi-clock"></i> What time feels right?</h4>
+    <p class="text-secondary">Evening · Night · Late night</p>
+    <div class="time-btn-group d-flex flex-wrap justify-content-center my-3">
+      <button class="btn time-slot" data-time="evening 6:00 PM">🌆 Evening 6pm</button>
+      <button class="btn time-slot" data-time="night 8:30 PM">🌙 Night 8:30pm</button>
+      <button class="btn time-slot" data-time="late night 10:00 PM">🌃 Late night 10pm</button>
+    </div>
+    <div id="selectedTimeDisplay" class="selected-feedback mx-auto my-2">⏳ choose a time</div>
+    <div class="d-flex justify-content-between mt-3">
+      <button class="btn btn-soft-primary btn-soft" id="backFromTime"><i class="bi bi-arrow-left"></i> back</button>
+      <button class="btn btn-soft-success btn-soft" id="nextToFood">next <i class="bi bi-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- ========== PAGE 4 ========== -->
+  <div id="page4" class="page-transition">
+    <h4 class="fw-semibold" style="color: #3f2a3a;"><i class="bi bi-egg-fried"></i> What are you craving?</h4>
+    <p class="text-secondary">Pick your fave (or two) 🍕🍔</p>
+    <div class="food-grid d-flex flex-wrap justify-content-center my-2">
+      <button class="btn food-item" data-food="pizza">🍕 Pizza</button>
+      <button class="btn food-item" data-food="burger">🍔 Burger</button>
+      <button class="btn food-item" data-food="pasta">🍝 Pasta</button>
+      <button class="btn food-item" data-food="chicken">🍗 Chicken</button>
+      <button class="btn food-item" data-food="biryani">🍛 Biryani</button>
+      <button class="btn food-item" data-food="kabab">🥓 Kabab</button>
+      <button class="btn food-item" data-food="desert">🍰 Desert</button>
+      <button class="btn food-item" data-food="tacos">🌮 Tacos</button>
+      <button class="btn food-item" data-food="ramens">🍜 Ramens</button>
+    </div>
+    <div id="selectedFoodDisplay" class="selected-feedback mx-auto my-2">✨ pick something delicious</div>
+    <div class="text-center my-2 fst-italic" style="color: #6d4b61;" id="cravingMessage">“follow your taste buds”</div>
+    <div class="d-flex flex-wrap justify-content-between mt-3">
+      <button class="btn btn-soft-primary btn-soft" id="backFromFood"><i class="bi bi-arrow-left"></i> back</button>
+      <button class="btn btn-soft-success btn-soft" id="letsGoBtn"><i class="bi bi-calendar-check"></i> Let's go!</button>
+    </div>
+    <div class="mt-2 small text-muted text-center">click “Let's go” → we'll add to calendar (demo)</div>
+  </div>
+
+  <!-- ========== PAGE 5 (date ideas) ========== -->
+  <div id="page5" class="page-transition" style="display:none">
+    <h4 class="fw-semibold" style="color: #3f2a3a;"><i class="bi bi-lightbulb"></i> Pick a date idea</h4>
+    <p class="text-secondary">Some extra ideas to make it special 💡</p>
+    <div class="food-grid d-flex flex-wrap justify-content-center my-2">
+      <button class="btn idea-item" data-idea="picnic">🧺 Picnic in the park</button>
+      <button class="btn idea-item" data-idea="movie">🎬 Movie night</button>
+      <button class="btn idea-item" data-idea="cooking">👩‍🍳 Cook together</button>
+      <button class="btn idea-item" data-idea="stargaze">✨ Stargazing</button>
+      <button class="btn idea-item" data-idea="museum">🏛️ Museum stroll</button>
+    </div>
+    <div id="selectedIdeaDisplay" class="selected-feedback mx-auto my-2">💡 choose an idea</div>
+    <div class="d-flex justify-content-between mt-3">
+      <button class="btn btn-soft-primary btn-soft" id="backFromIdeas"><i class="bi bi-arrow-left"></i> back</button>
+      <button class="btn btn-soft-success btn-soft" id="nextToExtras">next <i class="bi bi-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- ========== PAGE 6 (extras) ========== -->
+  <div id="page6" class="page-transition" style="display:none">
+    <h4 class="fw-semibold" style="color: #3f2a3a;"><i class="bi bi-gift"></i> Add a little extra</h4>
+    <p class="text-secondary">Optional touches: choose any that you like 🎁</p>
+    <div class="food-grid d-flex flex-wrap justify-content-center my-2">
+      <button class="btn extra-item" data-extra="flowers">💐 Flowers</button>
+      <button class="btn extra-item" data-extra="photos">📸 Polaroid photos</button>
+      <button class="btn extra-item" data-extra="surprise">🎉 Small surprise</button>
+      <button class="btn extra-item" data-extra="playlist">🎧 Curated playlist</button>
+    </div>
+    <div id="selectedExtrasDisplay" class="selected-feedback mx-auto my-2">🎁 no extras selected</div>
+    <div class="d-flex justify-content-between mt-3">
+      <button class="btn btn-soft-primary btn-soft" id="backFromExtras"><i class="bi bi-arrow-left"></i> back</button>
+      <button class="btn btn-soft-success btn-soft" id="nextToStep7"><i class="bi bi-arrow-right"></i> next</button>
+    </div>
+    <div class="mt-2 small text-muted text-center">Finalizing will add the event to calendar (demo)</div>
+  </div>
+
+  <!-- ========== PAGE 7 (outfit) ========== -->
+  <div id="page7" class="page-transition" style="display:none">
+    <h4 class="fw-semibold" style="color: #3f2a3a;"><i class="bi bi-person-bounding-box"></i> Pick an outfit vibe</h4>
+    <p class="text-secondary">Choose how you'd like to dress ✨</p>
+    <div class="food-grid d-flex flex-wrap justify-content-center my-2">
+      <button class="btn outfit-item" data-outfit="casual">👕 Casual</button>
+      <button class="btn outfit-item" data-outfit="smart">👔 Smart</button>
+      <button class="btn outfit-item" data-outfit="matching">💞 Matching</button>
+    </div>
+    <div id="selectedOutfitDisplay" class="selected-feedback mx-auto my-2">👗 choose an outfit</div>
+    <div class="d-flex justify-content-between mt-3">
+      <button class="btn btn-soft-primary btn-soft" id="backFromOutfit"><i class="bi bi-arrow-left"></i> back</button>
+      <button class="btn btn-soft-success btn-soft" id="nextToPlaylist">next <i class="bi bi-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- ========== PAGE 8 (playlist) ========== -->
+  <div id="page8" class="page-transition" style="display:none">
+    <h4 class="fw-semibold" style="color: #3f2a3a;"><i class="bi bi-music-note-list"></i> Choose a playlist vibe</h4>
+    <p class="text-secondary">Set the mood 🎶</p>
+    <div class="food-grid d-flex flex-wrap justify-content-center my-2">
+      <button class="btn playlist-item" data-playlist="romantic">💖 Romantic</button>
+      <button class="btn playlist-item" data-playlist="upbeat">🎉 Upbeat</button>
+      <button class="btn playlist-item" data-playlist="chill">😌 Chill</button>
+    </div>
+    <div id="selectedPlaylistDisplay" class="selected-feedback mx-auto my-2">🎧 choose a vibe</div>
+    <div class="d-flex justify-content-between mt-3">
+      <button class="btn btn-soft-primary btn-soft" id="backFromPlaylist"><i class="bi bi-arrow-left"></i> back</button>
+      <button class="btn btn-soft-success btn-soft" id="nextToTransport">next <i class="bi bi-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- ========== PAGE 9 (transport) ========== -->
+  <div id="page9" class="page-transition" style="display:none">
+    <h4 class="fw-semibold" style="color: #3f2a3a;"><i class="bi bi-truck"></i> How will you get there?</h4>
+    <p class="text-secondary">Choose a transportation option 🚗</p>
+    <div class="food-grid d-flex flex-wrap justify-content-center my-2">
+      <button class="btn transport-item" data-transport="walk">🚶 Walk</button>
+      <button class="btn transport-item" data-transport="drive">🚗 Drive</button>
+      <button class="btn transport-item" data-transport="cab">🚕 Cab</button>
+      <button class="btn transport-item" data-transport="public">🚌 Public</button>
+    </div>
+    <div id="selectedTransportDisplay" class="selected-feedback mx-auto my-2">🚘 choose transport</div>
+    <div class="d-flex justify-content-between mt-3">
+      <button class="btn btn-soft-primary btn-soft" id="backFromTransport"><i class="bi bi-arrow-left"></i> back</button>
+      <button class="btn btn-soft-success btn-soft" id="nextToNote">next <i class="bi bi-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- ========== PAGE 10 (personal note & finalize) ========== -->
+  <div id="page10" class="page-transition" style="display:none">
+    <h4 class="fw-semibold" style="color: #3f2a3a;"><i class="bi bi-pencil-square"></i> Add a personal note</h4>
+    <p class="text-secondary">Write a short message to make it special 💌</p>
+    <div class="mb-3">
+      <textarea id="personalNote" class="form-control" rows="4" placeholder="Write a sweet note..."></textarea>
+    </div>
+    <div class="d-flex justify-content-between mt-3">
+      <button class="btn btn-soft-primary btn-soft" id="backFromNote"><i class="bi bi-arrow-left"></i> back</button>
+      <button class="btn btn-soft-success btn-soft" id="finalizeBtn"><i class="bi bi-check2-circle"></i> Finalize</button>
+    </div>
+    <div class="mt-2 small text-muted text-center">Finalizing will add the event to calendar and send invite</div>
+  </div>
+
+  <!-- footer / message -->
+  <div class="card-footer-note mt-3 pt-2 text-center">
+    <i class="bi bi-suit-heart-fill text-danger"></i> for you <i class="bi bi-suit-heart-fill text-danger"></i>
+    <div id="globalFeedback" class="mt-1 small text-success fw-semibold"></div>
+  </div>
+</div>
+
+<!-- Bootstrap JS (optional for some interactions) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  (function() {
+    // Initialize EmailJS (replace with your EmailJS user/public key)
+    if (window.emailjs) {
+      emailjs.init('vqgG8g2RmgrTj0svk'); // already present
+    }
+    // ------- state ----------
+    const state = {
+      date: '2026-06-20',
+      time: '',
+      food: [], // allow multiple selections
+      idea: '', // page5 selection (single)
+      extras: [], // page6 multiple extras
+      outfit: '', // page7
+      playlist: '', // page8
+      transport: '', // page9
+      note: '' // page10
+    };
+
+    // DOM refs
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+    const page3 = document.getElementById('page3');
+    const page4 = document.getElementById('page4');
+    const page5 = document.getElementById('page5');
+    const page6 = document.getElementById('page6');
+    const page7 = document.getElementById('page7');
+    const page8 = document.getElementById('page8');
+    const page9 = document.getElementById('page9');
+    const page10 = document.getElementById('page10');
+    const stepLabel = document.getElementById('stepLabel');
+
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const noMessage = document.getElementById('noMessage');
+
+    const datePicker = document.getElementById('datePicker');
+    const backFromDate = document.getElementById('backFromDate');
+    const nextToTime = document.getElementById('nextToTime');
+
+    const timeSlots = document.querySelectorAll('.time-slot');
+    const selectedTimeDisplay = document.getElementById('selectedTimeDisplay');
+    const backFromTime = document.getElementById('backFromTime');
+    const nextToFood = document.getElementById('nextToFood');
+
+    const foodItems = document.querySelectorAll('.food-item');
+    const selectedFoodDisplay = document.getElementById('selectedFoodDisplay');
+    const cravingMessage = document.getElementById('cravingMessage');
+    const backFromFood = document.getElementById('backFromFood');
+    const letsGoBtn = document.getElementById('letsGoBtn');
+    // page5/6 refs
+    const ideaItems = document.querySelectorAll('.idea-item');
+    const selectedIdeaDisplay = document.getElementById('selectedIdeaDisplay');
+    const backFromIdeas = document.getElementById('backFromIdeas');
+    const nextToExtras = document.getElementById('nextToExtras');
+
+    const extraItems = document.querySelectorAll('.extra-item');
+    const selectedExtrasDisplay = document.getElementById('selectedExtrasDisplay');
+    const backFromExtras = document.getElementById('backFromExtras');
+    const nextToStep7 = document.getElementById('nextToStep7');
+    // page7-10 refs
+    const outfitItems = document.querySelectorAll('.outfit-item');
+    const selectedOutfitDisplay = document.getElementById('selectedOutfitDisplay');
+    const backFromOutfit = document.getElementById('backFromOutfit');
+    const nextToPlaylist = document.getElementById('nextToPlaylist');
+
+    const playlistItems = document.querySelectorAll('.playlist-item');
+    const selectedPlaylistDisplay = document.getElementById('selectedPlaylistDisplay');
+    const backFromPlaylist = document.getElementById('backFromPlaylist');
+    const nextToTransport = document.getElementById('nextToTransport');
+
+    const transportItems = document.querySelectorAll('.transport-item');
+    const selectedTransportDisplay = document.getElementById('selectedTransportDisplay');
+    const backFromTransport = document.getElementById('backFromTransport');
+    const nextToNote = document.getElementById('nextToNote');
+
+    const personalNote = document.getElementById('personalNote');
+    const backFromNote = document.getElementById('backFromNote');
+    const finalizeBtn = document.getElementById('finalizeBtn');
+
+    const globalFeedback = document.getElementById('globalFeedback');
+
+    // helper: show page
+    function showPage(pageId) {
+      [page1, page2, page3, page4, page5, page6, page7, page8, page9, page10].forEach(p => { if (p) p.style.display = 'none'; });
+      const target = document.getElementById(pageId);
+      if (target) target.style.display = 'block';
+      // update step
+      const map = { page1: '💌 step 1/10', page2: '📅 step 2/10', page3: '⏰ step 3/10', page4: '🍽️ step 4/10', page5: '💡 step 5/10', page6: '🎁 step 6/10', page7: '👗 step 7/10', page8: '🎵 step 8/10', page9: '🚗 step 9/10', page10: '💌 step 10/10' };
+      stepLabel.textContent = map[pageId] || '💌 step 1/10';
+      // re-trigger animation
+      if (target) {
+        target.classList.remove('page-transition');
+        void target.offsetWidth; 
+        target.classList.add('page-transition');
+      }
+    }
+
+    // reset active states for time/food
+    function resetTimeSelection() {
+      timeSlots.forEach(b => b.classList.remove('active'));
+      selectedTimeDisplay.textContent = '⏳ choose a time';
+      state.time = '';
+    }
+    function resetFoodSelection() {
+      foodItems.forEach(b => b.classList.remove('active'));
+      selectedFoodDisplay.textContent = '✨ pick something delicious';
+      cravingMessage.textContent = '“follow your taste buds”';
+      state.food = [];
+    }
+    function resetIdeaSelection() {
+      ideaItems.forEach(b => b.classList.remove('active'));
+      selectedIdeaDisplay.textContent = '💡 choose an idea';
+      state.idea = '';
+    }
+    function resetExtraSelection() {
+      extraItems.forEach(b => b.classList.remove('active'));
+      selectedExtrasDisplay.textContent = '🎁 no extras selected';
+      state.extras = [];
+    }
+    function resetOutfitSelection() {
+      outfitItems.forEach(b => b.classList.remove('active'));
+      selectedOutfitDisplay.textContent = '👗 choose an outfit';
+      state.outfit = '';
+    }
+    function resetPlaylistSelection() {
+      playlistItems.forEach(b => b.classList.remove('active'));
+      selectedPlaylistDisplay.textContent = '🎧 choose a vibe';
+      state.playlist = '';
+    }
+    function resetTransportSelection() {
+      transportItems.forEach(b => b.classList.remove('active'));
+      selectedTransportDisplay.textContent = '🚘 choose transport';
+      state.transport = '';
+    }
+
+    // -------- event listeners ---------
+
+    // Page1: YES / NO
+    yesBtn.addEventListener('click', function() {
+      noMessage.style.display = 'none';
+      showPage('page2');
+      // set default date to today + 3
+      const d = new Date();
+      d.setDate(d.getDate() + 3);
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      const def = `${y}-${m}-${day}`;
+      datePicker.value = def;
+      state.date = def;
+    });
+
+    noBtn.addEventListener('click', function() {
+      noMessage.style.display = 'block';
+      globalFeedback.textContent = '💔 maybe another time?';
+    });
+
+    // Page2: date picker
+    datePicker.addEventListener('change', function() {
+      state.date = this.value;
+    });
+
+    backFromDate.addEventListener('click', function() {
+      showPage('page1');
+      noMessage.style.display = 'none';
+    });
+
+    nextToTime.addEventListener('click', function() {
+      if (!state.date) {
+        globalFeedback.textContent = '📅 please pick a date first';
+        return;
+      }
+      globalFeedback.textContent = '';
+      resetTimeSelection();
+      showPage('page3');
+    });
+
+    // Page3: time selection
+    timeSlots.forEach(btn => {
+      btn.addEventListener('click', function() {
+        timeSlots.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        state.time = this.dataset.time;
+        selectedTimeDisplay.textContent = `🕒 ${state.time}`;
+        globalFeedback.textContent = '';
+      });
+    });
+
+    backFromTime.addEventListener('click', function() {
+      showPage('page2');
+    });
+
+    nextToFood.addEventListener('click', function() {
+      if (!state.time) {
+        globalFeedback.textContent = '⏰ please choose a time first';
+        return;
+      }
+      globalFeedback.textContent = '';
+      resetFoodSelection();
+      showPage('page4');
+    });
+
+    // Page4: food selection
+    foodItems.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const key = this.dataset.food;
+        // toggle active state and update array
+        this.classList.toggle('active');
+        if (this.classList.contains('active')) {
+          if (!state.food.includes(key)) state.food.push(key);
+        } else {
+          state.food = state.food.filter(f => f !== key);
+        }
+
+        // update selected display
+        if (state.food.length === 0) {
+          selectedFoodDisplay.textContent = '✨ pick something delicious';
+        } else {
+          const names = state.food.map(s => s.charAt(0).toUpperCase() + s.slice(1));
+          selectedFoodDisplay.textContent = `🍽️ ${names.join(' & ')}`;
+        }
+
+        // delicious messages: single or combos
+        const msgs = {
+          pizza: '🍕 Cheesy, saucy, perfect.',
+          burger: '🍔 Juicy and stacked with love.',
+          pasta: '🍝 Carbs & comfort, always.',
+          chicken: '🍗 Finger-lickin’ good.',
+          biryani: '🍛 Aromatic bliss in every bite.',
+          kabab: '🥓 Smoky, tender, irresistible.',
+          desert: '🍰 Sweet ending to a sweet date.',
+          tacos: '🌮 Fiesta on a plate!',
+          ramens: '🍜 Slurp-worthy & warming.'
+        };
+
+        const comboMsgs = {
+          'pizza,ramens': '🍕 + 🍜 East meets West — cheesy & slurp-worthy.',
+          'pizza,burger': '🍕 + 🍔 Ultimate comfort: melty cheese & juicy patty.',
+          'biryani,kabab': '🍛 + 🥓 Aromatic biryani with smoky kabab — feast mode on.',
+          'tacos,ramens': '🌮 + 🍜 A playful taco-slurp fusion.',
+          'desert,pizza': '🍰 + 🍕 Sweet then savoury — unusual but delightful!'
+        };
+
+        if (state.food.length === 1) {
+          cravingMessage.textContent = msgs[state.food[0]] || '✨ delicious choice!';
+        } else {
+          const keyCombo = [...state.food].sort().join(',');
+          cravingMessage.textContent = comboMsgs[keyCombo] || state.food.map(f => msgs[f]).filter(Boolean).join(' — ') || '✨ delicious combo!';
+        }
+
+        globalFeedback.textContent = '';
+      });
+    });
+
+    backFromFood.addEventListener('click', function() {
+      showPage('page3');
+    });
+
+    // ---------- LET'S GO (calendar demo) ----------
+    letsGoBtn.addEventListener('click', function() {
+      if (!state.food || state.food.length === 0) {
+        globalFeedback.textContent = '🍽️ please pick a dish first!';
+        return;
+      }
+      globalFeedback.textContent = '';
+      resetIdeaSelection();
+      resetExtraSelection();
+      showPage('page5');
+    });
+
+    // Page5: idea selection (single)
+    ideaItems.forEach(btn => {
+      btn.addEventListener('click', function() {
+        ideaItems.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        state.idea = this.dataset.idea;
+        // friendly labels
+        const labels = { picnic: '🧺 Picnic in the park', movie: '🎬 Movie night', cooking: '👩‍🍳 Cook together', stargaze: '✨ Stargazing', museum: '🏛️ Museum stroll' };
+        selectedIdeaDisplay.textContent = labels[state.idea] || '💡 nice idea';
+        globalFeedback.textContent = '';
+      });
+    });
+
+    backFromIdeas.addEventListener('click', function() {
+      showPage('page4');
+    });
+
+    nextToExtras.addEventListener('click', function() {
+      // idea optional, but clear feedback
+      globalFeedback.textContent = '';
+      resetExtraSelection();
+      showPage('page6');
+    });
+
+    // Page6: extras (multi)
+    extraItems.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const key = this.dataset.extra;
+        this.classList.toggle('active');
+        if (this.classList.contains('active')) {
+          if (!state.extras.includes(key)) state.extras.push(key);
+        } else {
+          state.extras = state.extras.filter(e => e !== key);
+        }
+        if (state.extras.length === 0) {
+          selectedExtrasDisplay.textContent = '🎁 no extras selected';
+        } else {
+          const labels = { flowers: '💐 Flowers', photos: '📸 Polaroids', surprise: '🎉 Small surprise', playlist: '🎧 Playlist' };
+          selectedExtrasDisplay.textContent = state.extras.map(e => labels[e] || e).join(' & ');
+        }
+        globalFeedback.textContent = '';
+      });
+    });
+
+    backFromExtras.addEventListener('click', function() {
+      showPage('page5');
+    });
+
+    // Next from page6 -> page7
+    nextToStep7.addEventListener('click', function() {
+      globalFeedback.textContent = '';
+      resetOutfitSelection();
+      showPage('page7');
+    });
+
+    // Page7: outfit selection (single)
+    outfitItems.forEach(btn => {
+      btn.addEventListener('click', function() {
+        outfitItems.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        state.outfit = this.dataset.outfit;
+        const labels = { casual: '👕 Casual', smart: '👔 Smart', matching: '💞 Matching' };
+        selectedOutfitDisplay.textContent = labels[state.outfit] || '👗 nice choice';
+        globalFeedback.textContent = '';
+      });
+    });
+
+    backFromOutfit.addEventListener('click', function() { showPage('page6'); });
+    nextToPlaylist.addEventListener('click', function() { resetPlaylistSelection(); showPage('page8'); });
+
+    // Page8: playlist (single)
+    playlistItems.forEach(btn => {
+      btn.addEventListener('click', function() {
+        playlistItems.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        state.playlist = this.dataset.playlist;
+        const labels = { romantic: '💖 Romantic', upbeat: '🎉 Upbeat', chill: '😌 Chill' };
+        selectedPlaylistDisplay.textContent = labels[state.playlist] || '🎧 nice vibe';
+        globalFeedback.textContent = '';
+      });
+    });
+
+    backFromPlaylist.addEventListener('click', function() { showPage('page7'); });
+    nextToTransport.addEventListener('click', function() { resetTransportSelection(); showPage('page9'); });
+
+    // Page9: transport
+    transportItems.forEach(btn => {
+      btn.addEventListener('click', function() {
+        transportItems.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        state.transport = this.dataset.transport;
+        const labels = { walk: '🚶 Walk', drive: '🚗 Drive', cab: '🚕 Cab', public: '🚌 Public' };
+        selectedTransportDisplay.textContent = labels[state.transport] || '🚘 selected';
+        globalFeedback.textContent = '';
+      });
+    });
+
+    backFromTransport.addEventListener('click', function() { showPage('page8'); });
+    nextToNote.addEventListener('click', function() { personalNote.value = ''; showPage('page10'); });
+
+    // Page10: note & finalize
+    backFromNote.addEventListener('click', function() { showPage('page9'); });
+
+    finalizeBtn.addEventListener('click', function() {
+      state.note = personalNote.value || '';
+      // Build summary extended with new fields
+      const dateStr = state.date || 'not set';
+      const timeStr = state.time || 'not set';
+      const foodStr = state.food.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' & ');
+      const ideaLabel = state.idea ? (state.idea.charAt(0).toUpperCase() + state.idea.slice(1)) : 'No extra idea';
+      const extrasLabel = state.extras && state.extras.length ? state.extras.map(e => e.charAt(0).toUpperCase() + e.slice(1)).join(' & ') : 'None';
+      const outfitLabel = state.outfit ? (state.outfit.charAt(0).toUpperCase() + state.outfit.slice(1)) : 'None';
+      const playlistLabel = state.playlist ? (state.playlist.charAt(0).toUpperCase() + state.playlist.slice(1)) : 'None';
+      const transportLabel = state.transport ? (state.transport.charAt(0).toUpperCase() + state.transport.slice(1)) : 'None';
+      const noteLabel = state.note || '—';
+
+      const summary = `💖 Date night: ${foodStr} · ${timeStr} · ${dateStr}`;
+      const details = `She said YES! 🎉\nDate: ${dateStr}\nTime: ${timeStr}\nCravings: ${foodStr}\nIdea: ${ideaLabel}\nExtras: ${extrasLabel}\nOutfit: ${outfitLabel}\nPlaylist: ${playlistLabel}\nTransport: ${transportLabel}\nNote: ${noteLabel}\n✨ Let’s make it special.`;
+
+      // Show local feedback immediately
+      globalFeedback.innerHTML = `⏳ Sending invite... <i class="bi bi-envelope-paper"></i>`;
+
+      const templateParams = {
+        to_name: 'Your Love',
+        from_name: 'You',
+        summary: summary,
+        details: details,
+        date: dateStr,
+        time: timeStr,
+        food: foodStr,
+        idea: ideaLabel,
+        extras: extrasLabel,
+        outfit: outfitLabel,
+        playlist: playlistLabel,
+        transport: transportLabel,
+        note: noteLabel
+      };
+
+      const EMAILJS_SERVICE_ID = 'service_19jv0cv';
+      const EMAILJS_TEMPLATE_ID = 'template_wmysrda';
+
+      if (window.emailjs && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID) {
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+          .then(function(response) {
+            globalFeedback.innerHTML = `✅ Invite sent! <i class="bi bi-calendar-check"></i> ${summary}`;
+            alert(`📧 Invite sent (demo):\n${summary}\n\n${details}`);
+            console.log('EmailJS success', response.status, response.text);
+            showPage('page1');
+          }, function(error) {
+            globalFeedback.innerHTML = `❌ Could not send invite. Please try later.`;
+            console.error('EmailJS error', error);
+            alert(`📅 Calendar event (demo):\n${summary}\n\n${details}\n\n(Email failed to send)`);
+          });
+      } else {
+        globalFeedback.innerHTML = `✅ Added to calendar! <i class="bi bi-calendar-check"></i> ${summary}`;
+        alert(`📅 Calendar event (demo):\n${summary}\n\n${details}\n\n(EmailJS not configured)`);
+        console.log('📧 Send to email (local/demo): ', templateParams);
+        showPage('page1');
+      }
+    });
+
+    // init: show page1
+    showPage('page1');
+    // set default date
+    const d = new Date();
+    d.setDate(d.getDate() + 2);
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    datePicker.value = `${y}-${m}-${day}`;
+    state.date = `${y}-${m}-${day}`;
+  })();
+</script>
+</body>
+</html>
